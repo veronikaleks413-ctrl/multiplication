@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Таблица умножения | Игры для детей с ЛУО</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e8f0fa 0%, #c8dce8 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .menu-screen { display: block; }
+        .game-screen { display: none; }
+
+        h1 {
+            text-align: center;
+            font-size: 2.2rem;
+            color: #1e466e;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #2c5a7a;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+
+        .games-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 40px;
+            padding: 25px;
+            width: 280px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 35px rgba(0,0,0,0.15);
+        }
+
+        .game-icon { font-size: 4rem; margin-bottom: 15px; }
+        .game-card h3 { font-size: 1.5rem; margin: 10px 0; color: #1e466e; }
+        .game-card p { color: #666; margin: 10px 0; }
+        .start-btn-badge {
+            display: inline-block;
+            background: #ffd966;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-size: 1rem;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #1e466e;
+        }
+
+        .game-header {
+            background: white;
+            border-radius: 30px;
+            padding: 15px 25px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .back-btn {
+            background: #e0e8f0;
+            border: none;
+            font-size: 1.2rem;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .game-title { font-size: 1.5rem; font-weight: bold; color: #1e466e; }
+        .score-panel {
+            background: #1e466e;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+        }
+
+        .game-play-area {
+            background: white;
+            border-radius: 40px;
+            padding: 25px;
+            min-height: 500px;
+        }
+        .question {
+            text-align: center;
+            font-size: 3rem;
+            font-weight: bold;
+            background: #fef7e0;
+            padding: 20px;
+            border-radius: 60px;
+            margin-bottom: 25px;
+        }
+        .feedback {
+            text-align: center;
+            font-size: 1.3rem;
+            padding: 15px;
+            border-radius: 40px;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .correct-feedback { background: #c8e6c9; color: #2e7d32; }
+        .wrong-feedback { background: #ffcdd2; color: #c62828; }
+
+        /* ========== ИГРА 1: ПРЯМОУГОЛЬНИК ========== */
+        .matrix-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        .matrix-grid {
+            display: inline-grid;
+            gap: 8px;
+            background: #eef2fa;
+            padding: 20px;
+            border-radius: 30px;
+            justify-content: center;
+        }
+        .matrix-cell {
+            background: #ffcf8a;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            width: 55px;
+            height: 55px;
+            position: relative;
+        }
+        .matrix-cell.first-column {
+            border-right: 4px solid #e34234;
+        }
+        .matrix-cell.first-row {
+            border-bottom: 4px solid #e34234;
+        }
+        .matrix-cell.corner-cell {
+            border-bottom: 4px solid #e34234;
+            border-right: 4px solid #e34234;
+        }
+        .select-answer-area {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .answer-option {
+            background: #2c7cb6;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 40px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .icon-selection-screen {
+            text-align: center;
+            padding: 20px;
+        }
+        .icon-selection-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #1e466e;
+        }
+        .icon-picker-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        .icon-pick-card {
+            background: #eef2fa;
+            border-radius: 60px;
+            padding: 20px 30px;
+            cursor: pointer;
+            font-size: 3rem;
+            transition: all 0.2s;
+            border: 4px solid transparent;
+        }
+        .icon-pick-card.selected {
+            border-color: #ffaa33;
+            background: #fff0d4;
+            transform: scale(1.05);
+        }
+        .table-selector {
+            margin: 20px 0;
+            background: #f0f4fa;
+            border-radius: 40px;
+            padding: 20px;
+        }
+        .table-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 15px;
+        }
+        .table-btn {
+            background: #e0e8f0;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+        .table-btn.selected {
+            background: #ffd966;
+            box-shadow: 0 0 0 2px #ffaa33;
+        }
+        .start-game-btn {
+            background: #2c7cb6;
+            color: white;
+            border: none;
+            padding: 14px 40px;
+            border-radius: 60px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        /* ========== ИГРА 2: СОЕДИНИ ПАРУ (примеры слева, ответы справа) ========== */
+        .match-layout {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            justify-content: center;
+        }
+        .match-column {
+            flex: 1;
+            min-width: 280px;
+            background: #eef2fa;
+            border-radius: 35px;
+            padding: 20px;
+        }
+        .match-title {
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #1e466e;
+            background: white;
+            display: inline-block;
+            width: 100%;
+            padding: 10px;
+            border-radius: 40px;
+        }
+        .match-card {
+            background: white;
+            border-radius: 20px;
+            padding: 15px 18px;
+            margin-bottom: 12px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.1s;
+            border: 3px solid transparent;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .match-card.selected {
+            border-color: #ffaa33;
+            background: #fff8e7;
+            transform: scale(1.02);
+        }
+        .match-card.matched {
+            background: #a5d6a7;
+            cursor: default;
+            opacity: 0.6;
+            text-decoration: line-through;
+            pointer-events: none;
+        }
+
+        /* ========== ИГРА 3: ЧЕЙ ЧЕРЕД? ========== */
+        .competition-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+        }
+        .player-card {
+            flex: 1;
+            min-width: 250px;
+            background: #f9f9ff;
+            border-radius: 35px;
+            padding: 20px;
+            text-align: center;
+            border: 4px solid #ddd;
+            transition: all 0.1s;
+        }
+        .player-card.active {
+            border-color: #ffaa33;
+            background: #fffef5;
+            box-shadow: 0 0 0 3px #ffcc66;
+        }
+        .player-name { font-size: 1.6rem; font-weight: bold; margin-bottom: 10px; }
+        .player-score { font-size: 2.2rem; font-weight: bold; color: #2c7cb6; margin: 10px 0; }
+        .player-question { font-size: 2rem; margin: 20px 0; font-weight: bold; }
+        .player-options {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .player-opt-btn {
+            background: #2c7cb6;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 40px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .turn-indicator {
+            text-align: center;
+            background: #ffebcc;
+            padding: 15px;
+            border-radius: 40px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 700px) {
+            .matrix-cell { width: 45px; height: 45px; font-size: 1.4rem; }
+            .match-card { font-size: 1.1rem; padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="menuScreen" class="menu-screen">
+        <h1>🎮 Учим таблицу умножения</h1>
+        <div class="subtitle">Выбери игру — весело и наглядно!</div>
+        <div class="games-grid">
+            <div class="game-card" onclick="startGame('matrix')">
+                <div class="game-icon">📊</div>
+                <h3>Прямоугольник</h3>
+                <p>Столбик × строчка = прямоугольник</p>
+                <div class="start-btn-badge">▶ Начать</div>
+            </div>
+            <div class="game-card" onclick="startGame('match')">
+                <div class="game-icon">🔗</div>
+                <h3>Соедини пару</h3>
+                <p>Найди соответствие пример-ответ</p>
+                <div class="start-btn-badge">▶ Начать</div>
+            </div>
+            <div class="game-card" onclick="startGame('competition')">
+                <div class="game-icon">🏆</div>
+                <h3>Чей черёд?</h3>
+                <p>Соревнование для двоих по очереди</p>
+                <div class="start-btn-badge">▶ Начать</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ИГРА 1: ПРЯМОУГОЛЬНИК -->
+    <div id="gameMatrix" class="game-screen">
+        <div class="game-header">
+            <button class="back-btn" onclick="backToMenu()">← Назад</button>
+            <span class="game-title">📊 Прямоугольник</span>
+            <div></div>
+        </div>
+        <div class="game-play-area" id="matrixDynamicArea"></div>
+    </div>
+
+    <!-- ИГРА 2: СОЕДИНИ ПАРУ (примеры слева, ответы справа) -->
+    <div id="gameMatch" class="game-screen">
+        <div class="game-header">
+            <button class="back-btn" onclick="backToMenu()">← Назад</button>
+            <span class="game-title">🔗 Соедини пару</span>
+            <div class="score-panel" id="matchScore">Найдено пар: 0 / 6</div>
+        </div>
+        <div class="game-play-area">
+            <div id="matchLayout" class="match-layout"></div>
+            <div class="feedback" id="matchFeedback">👉 Нажми на пример, потом на ответ (или наоборот)</div>
+        </div>
+    </div>
+
+    <!-- ИГРА 3: ЧЕЙ ЧЕРЕД? -->
+    <div id="gameCompetition" class="game-screen">
+        <div class="game-header">
+            <button class="back-btn" onclick="backToMenu()">← Назад</button>
+            <span class="game-title">🏆 Чей черёд?</span>
+            <div></div>
+        </div>
+        <div class="game-play-area">
+            <div class="turn-indicator" id="turnIndicator">🔴 Ход игрока 1</div>
+            <div class="competition-area" id="competitionArea"></div>
+            <div class="feedback" id="compFeedback">🎲 Игра начинается! Отвечай по очереди</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ---------- ПЕРЕКЛЮЧЕНИЕ ЭКРАНОВ ----------
+    function startGame(gameType) {
+        document.getElementById('menuScreen').style.display = 'none';
+        if (gameType === 'matrix') {
+            document.getElementById('gameMatrix').style.display = 'block';
+            showMatrixIconSelection();
+        } else if (gameType === 'match') {
+            document.getElementById('gameMatch').style.display = 'block';
+            initMatchGame();
+        } else if (gameType === 'competition') {
+            document.getElementById('gameCompetition').style.display = 'block';
+            initCompetitionGame();
+        }
+    }
+
+    function backToMenu() {
+        document.getElementById('gameMatrix').style.display = 'none';
+        document.getElementById('gameMatch').style.display = 'none';
+        document.getElementById('gameCompetition').style.display = 'none';
+        document.getElementById('menuScreen').style.display = 'block';
+    }
+
+    // ========== ИГРА 1: ПРЯМОУГОЛЬНИК ==========
+    let matrixRows = 3, matrixCols = 4, matrixProduct = 12;
+    let matrixScore = 0;
+    let matrixIcon = "🍎";
+    let waitingForMatrixNext = false;
+    let gameActive = false;
+    let selectedTable = 0;
+
+    function showMatrixIconSelection() {
+        gameActive = false;
+        const area = document.getElementById('matrixDynamicArea');
+        area.innerHTML = `
+            <div class="icon-selection-screen">
+                <div class="icon-selection-title">🍭 Выбери предметы для прямоугольника 🍭</div>
+                <div class="icon-picker-grid" id="iconPickerGrid">
+                    ${['🍎', '🐧', '⭐', '🍪', '🐟', '🌸'].map(icon => `
+                        <div class="icon-pick-card" data-icon="${icon}">${icon}</div>
+                    `).join('')}
+                </div>
+                <div class="table-selector">
+                    <div class="icon-selection-title" style="font-size:1.4rem;">📚 Какую таблицу учим?</div>
+                    <div class="table-buttons" id="tableButtons">
+                        <button class="table-btn" data-table="0">🌟 Вся таблица (2-9)</button>
+                        ${[2,3,4,5,6,7,8,9].map(n => `<button class="table-btn" data-table="${n}">Таблица на ${n}</button>`).join('')}
+                    </div>
+                </div>
+                <button class="start-game-btn" id="confirmStartMatrixBtn">🚀 Начать игру!</button>
+            </div>
+        `;
+        const pickCards = document.querySelectorAll('.icon-pick-card');
+        pickCards.forEach(card => {
+            card.onclick = () => {
+                pickCards.forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                matrixIcon = card.dataset.icon;
+            };
+        });
+        if (pickCards.length) pickCards[0].classList.add('selected');
+        
+        const tableBtns = document.querySelectorAll('.table-btn');
+        tableBtns.forEach(btn => {
+            btn.onclick = () => {
+                tableBtns.forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                selectedTable = parseInt(btn.dataset.table);
+            };
+        });
+        tableBtns[0].classList.add('selected');
+        selectedTable = 0;
+        
+        document.getElementById('confirmStartMatrixBtn').onclick = () => {
+            startMatrixGameplay();
+        };
+    }
+
+    function startMatrixGameplay() {
+        gameActive = true;
+        matrixScore = 0;
+        waitingForMatrixNext = false;
+        generateMatrixQuestion();
+        renderMatrixGamePlay();
+    }
+
+    function generateMatrixQuestion() {
+        let a, b;
+        if (selectedTable === 0) {
+            a = Math.floor(Math.random() * 8) + 2;
+            b = Math.floor(Math.random() * 8) + 2;
+        } else {
+            a = selectedTable;
+            b = Math.floor(Math.random() * 8) + 2;
+            if (Math.random() > 0.5 && b !== a) {
+                a = b;
+                b = selectedTable;
+            }
+        }
+        matrixRows = a;
+        matrixCols = b;
+        matrixProduct = matrixRows * matrixCols;
+    }
+
+    function renderMatrixGamePlay() {
+        if (!gameActive) return;
+        const area = document.getElementById('matrixDynamicArea');
+        area.innerHTML = `
+            <div class="question" id="matrixQuestion">${matrixRows} × ${matrixCols} = ?</div>
+            <div class="matrix-container" id="matrixContainer"></div>
+            <div class="feedback" id="matrixFeedback">👉 Выбери правильный ответ!</div>
+            <div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+                <button class="back-btn" id="changeSettingsBtn">⚙️ Сменить настройки</button>
+            </div>
+        `;
+        document.getElementById('changeSettingsBtn').onclick = () => {
+            gameActive = false;
+            showMatrixIconSelection();
+        };
+        renderMatrixGridPlay();
+        updateMatrixScoreDisplay();
+    }
+
+    function updateMatrixScoreDisplay() {
+        const existing = document.getElementById('matrixScoreInline');
+        if (existing) existing.innerHTML = `🏆 Счёт: ${matrixScore}`;
+        else {
+            const qDiv = document.querySelector('#matrixDynamicArea .question');
+            if (qDiv && !document.getElementById('matrixScoreInline')) {
+                const scoreDiv = document.createElement('div');
+                scoreDiv.id = 'matrixScoreInline';
+                scoreDiv.className = 'score-panel';
+                scoreDiv.style.display = 'inline-block';
+                scoreDiv.style.margin = '0 auto 15px auto';
+                scoreDiv.style.textAlign = 'center';
+                scoreDiv.innerHTML = `🏆 Счёт: ${matrixScore}`;
+                qDiv.insertAdjacentElement('afterend', scoreDiv);
+            }
+        }
+    }
+
+    function renderMatrixGridPlay() {
+        const container = document.getElementById('matrixContainer');
+        if (!container) return;
+        let gridHtml = `<div class="matrix-grid" style="grid-template-columns: repeat(${matrixCols}, 55px); gap: 8px;">`;
+        for (let row = 0; row < matrixRows; row++) {
+            for (let col = 0; col < matrixCols; col++) {
+                let cellClasses = 'matrix-cell';
+                if (col === 0) cellClasses += ' first-column';
+                if (row === 0) cellClasses += ' first-row';
+                if (row === 0 && col === 0) cellClasses += ' corner-cell';
+                gridHtml += `<div class="${cellClasses}">${matrixIcon}</div>`;
+            }
+        }
+        gridHtml += `</div>`;
+        gridHtml += `<div class="select-answer-area" id="answerOptionsPlay"></div>`;
+        container.innerHTML = gridHtml;
+        generateMatrixAnswerOptionsPlay();
+    }
+
+    function generateMatrixAnswerOptionsPlay() {
+        const container = document.getElementById('answerOptionsPlay');
+        if (!container) return;
+        let options = [matrixProduct, matrixProduct + matrixRows, matrixProduct + matrixCols];
+        if (options[1] === matrixProduct) options[1] = matrixProduct + 1;
+        if (options[2] === matrixProduct) options[2] = matrixProduct - 1;
+        if (options[2] < 1) options[2] = matrixProduct + 2;
+        if (options[0] === options[1]) options[1] = matrixProduct + 3;
+        if (options[2] === matrixProduct) options[2] = matrixProduct - 2;
+        options.sort(() => Math.random() - 0.5);
+        container.innerHTML = options.map(val => 
+            `<button class="answer-option" data-value="${val}">${val}</button>`
+        ).join('');
+        document.querySelectorAll('#answerOptionsPlay .answer-option').forEach(btn => {
+            btn.onclick = () => checkMatrixAnswerPlay(parseInt(btn.dataset.value));
+        });
+    }
+
+    function checkMatrixAnswerPlay(selected) {
+        if (!gameActive || waitingForMatrixNext) return;
+        const isCorrect = (selected === matrixProduct);
+        const feedbackDiv = document.getElementById('matrixFeedback');
+        if (isCorrect) {
+            matrixScore++;
+            if (feedbackDiv) {
+                feedbackDiv.className = 'feedback correct-feedback';
+                feedbackDiv.innerHTML = `✅ Правильно! ${matrixRows} × ${matrixCols} = ${matrixProduct} 🎉 +1 очко!`;
+            }
+            waitingForMatrixNext = true;
+            updateMatrixScoreDisplay();
+            setTimeout(() => {
+                if (!gameActive) return;
+                generateMatrixQuestion();
+                renderMatrixGamePlay();
+                waitingForMatrixNext = false;
+            }, 1200);
+        } else {
+            if (feedbackDiv) {
+                feedbackDiv.className = 'feedback wrong-feedback';
+                feedbackDiv.innerHTML = `❌ Неверно. ${matrixRows} × ${matrixCols} = ${matrixProduct}`;
+            }
+            waitingForMatrixNext = true;
+            setTimeout(() => {
+                if (!gameActive) return;
+                renderMatrixGamePlay();
+                waitingForMatrixNext = false;
+            }, 1500);
+        }
+        updateMatrixScoreDisplay();
+    }
+
+    // ========== ИГРА 2: СОЕДИНИ ПАРУ (примеры слева, ответы справа, вся таблица) ==========
+    let matchQuestions = [];    // { id, text, pairId, matched }
+    let matchAnswers = [];      // { id, text, pairId, matched }
+    let selectedSide = null;    // { type: 'question' or 'answer', index, pairId }
+    let matchPairsFound = 0;
+    let matchWait = false;
+
+    function initMatchGame() {
+        matchQuestions = [];
+        matchAnswers = [];
+        selectedSide = null;
+        matchPairsFound = 0;
+        matchWait = false;
+        generateMatchPairsV2();
+        shuffleArray(matchAnswers);
+        renderMatchGameV2();
+    }
+
+    function generateMatchPairsV2() {
+        const pairs = [];
+        const used = new Set();
+        while (pairs.length < 6) {
+            let a = Math.floor(Math.random() * 8) + 2;
+            let b = Math.floor(Math.random() * 8) + 2;
+            let key = `${a}×${b}`;
+            if (!used.has(key)) {
+                used.add(key);
+                pairs.push({
+                    pairId: pairs.length,
+                    questionText: `${a} × ${b}`,
+                    answerText: (a * b).toString()
+                });
+            }
+        }
+        pairs.forEach(pair => {
+            matchQuestions.push({
+                id: Math.random(),
+                text: pair.questionText,
+                pairId: pair.pairId,
+                matched: false
+            });
+            matchAnswers.push({
+                id: Math.random(),
+                text: pair.answerText,
+                pairId: pair.pairId,
+                matched: false
+            });
+        });
+    }
+
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+    }
+
+    function renderMatchGameV2() {
+        const container = document.getElementById('matchLayout');
+        if (!container) return;
+        
+        // Левая колонка — примеры
+        const leftCol = document.createElement('div');
+        leftCol.className = 'match-column';
+        leftCol.innerHTML = '<div class="match-title">📝 ПРИМЕРЫ</div>';
+        
+        matchQuestions.forEach((item, idx) => {
+            const card = document.createElement('div');
+            card.className = `match-card ${item.matched ? 'matched' : ''} ${selectedSide?.type === 'question' && selectedSide?.index === idx ? 'selected' : ''}`;
+            card.innerHTML = item.text + (item.matched ? ' ✓' : '');
+            if (!item.matched) {
+                card.onclick = () => handleMatchSideClick('question', idx, item.pairId);
+            }
+            leftCol.appendChild(card);
+        });
+        
+        // Правая колонка — ответы
+        const rightCol = document.createElement('div');
+        rightCol.className = 'match-column';
+        rightCol.innerHTML = '<div class="match-title">🔢 ОТВЕТЫ</div>';
+        
+        matchAnswers.forEach((item, idx) => {
+            const card = document.createElement('div');
+            card.className = `match-card ${item.matched ? 'matched' : ''} ${selectedSide?.type === 'answer' && selectedSide?.index === idx ? 'selected' : ''}`;
+            card.innerHTML = item.text + (item.matched ? ' ✓' : '');
+            if (!item.matched) {
+                card.onclick = () => handleMatchSideClick('answer', idx, item.pairId);
+            }
+            rightCol.appendChild(card);
+        });
+        
+        container.innerHTML = '';
+        container.appendChild(leftCol);
+        container.appendChild(rightCol);
+        
+        const matchedCount = matchQuestions.filter(q => q.matched).length;
+        document.getElementById('matchScore').innerHTML = `Найдено пар: ${matchedCount} / 6`;
+        
+        if (matchedCount === 6) {
+            document.getElementById('matchFeedback').className = 'feedback correct-feedback';
+            document.getElementById('matchFeedback').innerHTML = '🏆 ПОБЕДА! Ты соединил все пары! 🏆<br>🔄 Через 2 секунды новая игра';
+            setTimeout(() => initMatchGame(), 2500);
+        } else {
+            const fb = document.getElementById('matchFeedback');
+            if (!fb.className.includes('wrong')) {
+                fb.className = 'feedback';
+                fb.innerHTML = '👉 Нажми на пример, потом на ответ (или наоборот)';
+            }
+        }
+    }
+
+    function handleMatchSideClick(type, idx, pairId) {
+        if (matchWait) return;
+        
+        // Проверяем, не соединена ли уже эта карточка
+        if (type === 'question' && matchQuestions[idx].matched) return;
+        if (type === 'answer' && matchAnswers[idx].matched) return;
+        
+        // Если ничего не выбрано
+        if (selectedSide === null) {
+            selectedSide = { type, index: idx, pairId };
+            renderMatchGameV2();
+            return;
+        }
+        
+        // Если выбрана та же карточка — снимаем выделение
+        if (selectedSide.type === type && selectedSide.index === idx) {
+            selectedSide = null;
+            renderMatchGameV2();
+            return;
+        }
+        
+        // Пытаемся соединить
+        const first = selectedSide;
+        const second = { type, index: idx, pairId };
+        
+        let questionItem = null, answerItem = null;
+        if (first.type === 'question' && second.type === 'answer') {
+            questionItem = matchQuestions[first.index];
+            answerItem = matchAnswers[second.index];
+        } else if (first.type === 'answer' && second.type === 'question') {
+            questionItem = matchQuestions[second.index];
+            answerItem = matchAnswers[first.index];
+        } else {
+            // оба вопроса или оба ответа — сброс
+            selectedSide = null;
+            renderMatchGameV2();
+            return;
+        }
+        
+        // Проверка соответствия
+        if (questionItem && answerItem && questionItem.pairId === answerItem.pairId && !questionItem.matched && !answerItem.matched) {
+            // Правильно!
+            questionItem.matched = true;
+            answerItem.matched = true;
+            matchPairsFound++;
+            selectedSide = null;
+            renderMatchGameV2();
+            document.getElementById('matchFeedback').className = 'feedback correct-feedback';
+            document.getElementById('matchFeedback').innerHTML = '✅ Правильно! +1 пара!';
+            setTimeout(() => {
+                if (matchPairsFound < 6) {
+                    document.getElementById('matchFeedback').className = 'feedback';
+                    document.getElementById('matchFeedback').innerHTML = '👉 Продолжай соединять пары!';
+                }
+            }, 800);
+        } else {
+            // Неправильно
+            matchWait = true;
+            const wrongQuestion = questionItem ? questionItem.text : '?';
+            const wrongAnswer = answerItem ? answerItem.text : '?';
+            document.getElementById('matchFeedback').className = 'feedback wrong-feedback';
+            document.getElementById('matchFeedback').innerHTML = `😅 Не пара! ${wrongQuestion} ≠ ${wrongAnswer}. Попробуй ещё!`;
+            selectedSide = null;
+            renderMatchGameV2();
+            setTimeout(() => {
+                matchWait = false;
+                if (matchPairsFound < 6) {
+                    document.getElementById('matchFeedback').className = 'feedback';
+                    document.getElementById('matchFeedback').innerHTML = '👉 Нажми на пример, потом на ответ (или наоборот)';
+                }
+            }, 1200);
+        }
+    }
+
+    // ========== ИГРА 3: ЧЕЙ ЧЕРЕД? (вся таблица) ==========
+    let compPlayer1Score = 0, compPlayer2Score = 0;
+    let compCurrentPlayer = 1;
+    let compA = 3, compB = 4, compProduct = 12;
+    let compWaiting = false;
+
+    function initCompetitionGame() {
+        compPlayer1Score = 0;
+        compPlayer2Score = 0;
+        compCurrentPlayer = 1;
+        compWaiting = false;
+        generateCompQuestionFull();
+        renderCompetitionGame();
+    }
+
+    function generateCompQuestionFull() {
+        compA = Math.floor(Math.random() * 8) + 2;
+        compB = Math.floor(Math.random() * 8) + 2;
+        compProduct = compA * compB;
+    }
+
+    function renderCompetitionGame() {
+        const container = document.getElementById('competitionArea');
+        container.innerHTML = `
+            <div class="player-card ${compCurrentPlayer === 1 ? 'active' : ''}">
+                <div class="player-name">👩‍🎓 Игрок 1</div>
+                <div class="player-score" id="p1CompScore">${compPlayer1Score}</div>
+                <div class="player-question">${compCurrentPlayer === 1 ? `${compA} × ${compB} = ?` : '—'}</div>
+                <div class="player-options" id="p1CompOptions">
+                    ${compCurrentPlayer === 1 ? renderCompOptions() : ''}
+                </div>
+            </div>
+            <div class="player-card ${compCurrentPlayer === 2 ? 'active' : ''}">
+                <div class="player-name">👨‍🎓 Игрок 2</div>
+                <div class="player-score" id="p2CompScore">${compPlayer2Score}</div>
+                <div class="player-question">${compCurrentPlayer === 2 ? `${compA} × ${compB} = ?` : '—'}</div>
+                <div class="player-options" id="p2CompOptions">
+                    ${compCurrentPlayer === 2 ? renderCompOptions() : ''}
+                </div>
+            </div>
+        `;
+        document.getElementById('turnIndicator').innerHTML = compCurrentPlayer === 1 ? '🔴 Ход игрока 1' : '🔵 Ход игрока 2';
+    }
+
+    function renderCompOptions() {
+        let opts = [compProduct, compProduct + 2, compProduct - 2];
+        if (opts[2] < 1) opts[2] = compProduct + 1;
+        if (opts[0] === opts[1]) opts[1] = compProduct + 3;
+        opts.sort(() => Math.random() - 0.5);
+        return opts.map(v => `<button class="player-opt-btn" onclick="handleCompAnswer(${v})">${v}</button>`).join('');
+    }
+
+    function handleCompAnswer(selected) {
+        if (compWaiting) return;
+        const isCorrect = (selected === compProduct);
+        if (isCorrect) {
+            if (compCurrentPlayer === 1) compPlayer1Score++;
+            else compPlayer2Score++;
+            document.getElementById('compFeedback').className = 'feedback correct-feedback';
+            document.getElementById('compFeedback').innerHTML = `🎉 Игрок ${compCurrentPlayer} ответил верно! +1 очко`;
+        } else {
+            document.getElementById('compFeedback').className = 'feedback wrong-feedback';
+            document.getElementById('compFeedback').innerHTML = `❌ Игрок ${compCurrentPlayer} ошибся. Правильно: ${compProduct}`;
+        }
+        document.getElementById('p1CompScore').innerHTML = compPlayer1Score;
+        document.getElementById('p2CompScore').innerHTML = compPlayer2Score;
+        compCurrentPlayer = compCurrentPlayer === 1 ? 2 : 1;
+        generateCompQuestionFull();
+        compWaiting = true;
+        setTimeout(() => {
+            renderCompetitionGame();
+            compWaiting = false;
+            document.getElementById('compFeedback').className = 'feedback';
+            document.getElementById('compFeedback').innerHTML = `🎲 Ход игрока ${compCurrentPlayer}. Выбери ответ!`;
+        }, 1500);
+    }
+
+    window.startGame = startGame;
+    window.backToMenu = backToMenu;
+    window.handleCompAnswer = handleCompAnswer;
+</script>
+</body>
+</html>
